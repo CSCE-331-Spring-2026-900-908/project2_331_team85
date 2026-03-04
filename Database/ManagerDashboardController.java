@@ -12,6 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Controller class for the Manager Dashboard.
+ * Handles administrative tasks such as managing inventory, employees, and menu items,
+ * as well as viewing sales trends and reports.
+ */
 public class ManagerDashboardController {
 
     // Employee UI
@@ -54,6 +59,11 @@ public class ManagerDashboardController {
 
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
 
+    /**
+     * Initializes the controller class.
+     * Sets up table columns, loads initial data for inventory, trends, schedule, and menu.
+     * Configures event handlers for buttons.
+     */
     @FXML
     public void initialize() {
         // Init Tables
@@ -80,6 +90,9 @@ public class ManagerDashboardController {
         addEmpBtn.setOnAction(e -> addEmployeeToDB());
     }
 
+    /**
+     * Simulates sending a message in the team chat.
+     */
     private void sendMessage() {
         String message = chatInput.getText().trim();
         if (!message.isEmpty()) {
@@ -88,6 +101,9 @@ public class ManagerDashboardController {
         }
     }
 
+    /**
+     * Fetches current inventory levels from the database and populates the table.
+     */
     private void loadInventory() {
         ObservableList<Models.InventoryItem> invList = FXCollections.observableArrayList();
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
@@ -99,6 +115,10 @@ public class ManagerDashboardController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Loads sales trends data for the chart.
+     * Aggregates total revenue by day of the week.
+     */
     private void loadItemTrends() {
         trendsChart.getData().clear();
         XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -118,6 +138,9 @@ public class ManagerDashboardController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Calculates and displays total orders and revenue for the last 3 months.
+     */
     private void loadQuarterlyOverview() {
         String sql = "SELECT COUNT(order_id) as total_orders, SUM(total_price) as total_rev FROM orders WHERE order_time >= NOW() - INTERVAL '3 months'";
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
@@ -129,6 +152,9 @@ public class ManagerDashboardController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Generates a random schedule using employee names fetched from the database.
+     */
     private void loadSchedule() {
         scheduleList.getItems().clear();
         List<String> employeeNames = new ArrayList<>();
@@ -153,6 +179,9 @@ public class ManagerDashboardController {
         }
     }
 
+    /**
+     * Fetches all menu items from the database and populates the menu management table.
+     */
     private void loadMenuData() {
         ObservableList<Models.MenuItem> menuList = FXCollections.observableArrayList();
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
@@ -165,6 +194,9 @@ public class ManagerDashboardController {
     }
 
     // --- DB INSERTS ---
+    /**
+     * Adds a new menu item to the database based on user input.
+     */
     private void addMenuItemToDB() {
         String name = menuNameInput.getText().trim();
         String priceText = menuPriceInput.getText().trim();
@@ -183,6 +215,9 @@ public class ManagerDashboardController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Adds a new inventory item to the database.
+     */
     private void addInventoryItemToDB() {
         String name = invNameInput.getText().trim();
         String qtyText = invQtyInput.getText().trim();
@@ -203,6 +238,9 @@ public class ManagerDashboardController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Adds a new employee to the database.
+     */
     private void addEmployeeToDB() {
         String name = empNameInput.getText().trim();
         String role = empRoleInput.getText().trim();
@@ -220,6 +258,11 @@ public class ManagerDashboardController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Establishes a connection to the database using credentials from dbSetup.
+     * @return Connection object
+     * @throws SQLException if connection fails
+     */
     private Connection getConnection() throws SQLException {
         try { Class.forName("org.postgresql.Driver"); } catch (Exception e) {}
         dbSetup my = new dbSetup();

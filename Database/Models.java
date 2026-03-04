@@ -1,5 +1,14 @@
+/**
+ * Container class for data models used throughout the application.
+ * These inner classes represent entities fetched from the database
+ * or aggregated for reports.
+ */
 public class Models {
 
+    /**
+     * Represents a menu item available for sale.
+     * Used for displaying menu options in the UI.
+     */
     public static class MenuItem {
         private int id;
         private String name;
@@ -16,6 +25,10 @@ public class Models {
         public double getPrice() { return price; }
     }
 
+    /**
+     * Represents an item in the inventory.
+     * Tracks stock levels and units.
+     */
     public static class InventoryItem {
         private int id;
         private String name;
@@ -35,6 +48,10 @@ public class Models {
         public String getUnit() { return unit; }
     }
 
+    /**
+     * Represents a sales record for reporting.
+     * Aggregates quantity sold and revenue generated per item.
+     */
     public static class SalesItem {
         private String itemName;
         private int quantity;
@@ -51,6 +68,10 @@ public class Models {
         public double getRevenue() { return revenue; }
     }
 
+    /**
+     * Represents inventory usage data.
+     * Used for tracking how much of an ingredient has been consumed.
+     */
     public static class UsageItem {
         private String itemName;
         private double quantityUsed;
