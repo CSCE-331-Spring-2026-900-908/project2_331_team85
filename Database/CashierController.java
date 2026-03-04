@@ -16,11 +16,23 @@ public class CashierController {
     @FXML private Button submitOrderButton;
     @FXML private Button clearBtn;
     @FXML private Button queryButton;
+    
+    // Customization buttons
+    @FXML private Button btnSweet0;
+    @FXML private Button btnSweet50;
+    @FXML private Button btnSweet100;
+    @FXML private Button btnSweet120;
+    @FXML private Button btnIceNone;
+    @FXML private Button btnIceLess;
+    @FXML private Button btnIceReg;
+    @FXML private Button btnIceExtra;
 
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
     
     private List<Integer> cartItemIds = new ArrayList<>();
     private double currentTotal = 0.0;
+    private String currentSweetness = "100%";
+    private String currentIceLevel = "Regular";
 
     @FXML
     public void initialize() {
@@ -31,11 +43,33 @@ public class CashierController {
             loadMenuButtons();
             statusLabel.setText("Menu refreshed!");
         });
+        
+        // Setup customization button handlers
+        setupCustomizationButtons();
     }
 
-    @FXML
-    public void handleCustomizationClick(ActionEvent event) {
-        System.out.println("Customization button clicked!");
+    private void setupCustomizationButtons() {
+        // Sweetness buttons
+        btnSweet0.setOnAction(e -> setSweetness("0%"));
+        btnSweet50.setOnAction(e -> setSweetness("50%"));
+        btnSweet100.setOnAction(e -> setSweetness("100%"));
+        btnSweet120.setOnAction(e -> setSweetness("120%"));
+        
+        // Ice buttons
+        btnIceNone.setOnAction(e -> setIceLevel("None"));
+        btnIceLess.setOnAction(e -> setIceLevel("Less"));
+        btnIceReg.setOnAction(e -> setIceLevel("Regular"));
+        btnIceExtra.setOnAction(e -> setIceLevel("Extra"));
+    }
+    
+    private void setSweetness(String sweetness) {
+        currentSweetness = sweetness;
+        statusLabel.setText("Sweetness set to: " + sweetness);
+    }
+    
+    private void setIceLevel(String iceLevel) {
+        currentIceLevel = iceLevel;
+        statusLabel.setText("Ice level set to: " + iceLevel);
     }
 
     private void loadMenuButtons() {
@@ -63,11 +97,29 @@ public class CashierController {
 
     private void addToCart(int id, String name, double price) {
         cartItemIds.add(id);
-        cartList.getItems().add(name + " - $" + String.format("%.2f", price));
+        
+        // Add main item
+        String displayItem = name + " - $" + String.format("%.2f", price);
+        cartList.getItems().add(displayItem);
+        
+        // Add customization info on separate lines if not default
+        if (!currentSweetness.equals("100%")) {
+            cartList.getItems().add("    Sweetness: " + currentSweetness);
+        }
+        if (!currentIceLevel.equals("Regular")) {
+            cartList.getItems().add("    Ice: " + currentIceLevel);
+        }
+        
+        // Always show a separator line for readability
+        cartList.getItems().add("");
         
         currentTotal += price;
         totalLabel.setText("Total: $" + String.format("%.2f", currentTotal));
         statusLabel.setText("Item added.");
+        
+        // Reset customization to defaults after adding to cart
+        currentSweetness = "100%";
+        currentIceLevel = "Regular";
     }
 
     private void clearCart() {
@@ -76,6 +128,10 @@ public class CashierController {
         currentTotal = 0.0;
         totalLabel.setText("Total: $0.00");
         statusLabel.setText("Order cleared.");
+        
+        // Reset customization to defaults
+        currentSweetness = "100%";
+        currentIceLevel = "Regular";
     }
 
     private void checkoutOrder() {

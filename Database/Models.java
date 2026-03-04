@@ -50,4 +50,17 @@ public class Models {
         public int getQuantity() { return quantity; }
         public double getRevenue() { return revenue; }
     }
+
+    public static class UsageItem {
+        private String itemName;
+        private double quantityUsed;
+
+        public UsageItem(String itemName, double quantityUsed) {
+            this.itemName = itemName;
+            this.quantityUsed = quantityUsed;
+        }
+
+        public String getItemName() { return itemName; }
+        public double getQuantityUsed() { return quantityUsed; }
+    }
 }

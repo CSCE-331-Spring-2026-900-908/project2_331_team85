@@ -4,8 +4,8 @@ import java.time.format.DateTimeFormatter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -14,7 +14,9 @@ public class ReportingController {
     
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
-    @FXML private BarChart<String, Number> usageChart;
+    @FXML private TableView<Models.UsageItem> usageTable;
+    @FXML private TableColumn<Models.UsageItem, String> usageItemCol;
+    @FXML private TableColumn<Models.UsageItem, Double> usageQuantityCol;
     @FXML private Button generateUsageBtn;
     
     @FXML private TextArea xReportArea;
@@ -40,6 +42,7 @@ public class ReportingController {
 
     @FXML
     public void initialize() {
+        setupUsageTable();
         setupSalesTable();
         setupEventHandlers();
         checkLastZReport();
@@ -50,6 +53,11 @@ public class ReportingController {
         try { Class.forName("org.postgresql.Driver"); } catch (Exception e) {}
         dbSetup my = new dbSetup();
         return DriverManager.getConnection(DB_URL, my.user, my.pswd);
+    }
+
+    private void setupUsageTable() {
+        usageItemCol.setCellValueFactory(new PropertyValueFactory<>("itemName"));
+        usageQuantityCol.setCellValueFactory(new PropertyValueFactory<>("quantityUsed"));
     }
 
     private void setupSalesTable() {
@@ -70,15 +78,46 @@ public class ReportingController {
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT MAX(report_date) FROM z_reports");
             if (rs.next() && rs.getDate(1) != null) {
-                lastZReportLabel.setText("Last Z-Report: " + rs.getDate(1).toString());
-                if (rs.getDate(1).toLocalDate().equals(LocalDate.now())) {
+                Date lastZReportDate = rs.getDate(1);
+                lastZReportLabel.setText("Last Z-Report: " + lastZReportDate.toString());
+                
+                if (lastZReportDate.toLocalDate().equals(LocalDate.now())) {
                     generateZReportBtn.setDisable(true);
                     generateZReportBtn.setText("Z-Report Already Run Today");
+                    // Load and display today's Z-report content
+                    loadTodaysZReport();
                 }
             } else {
                 lastZReportLabel.setText("No Z-Reports found");
             }
         } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void loadTodaysZReport() {
+        String sql = "SELECT total_orders, total_revenue, tax_amount FROM z_reports WHERE DATE(report_date) = CURRENT_DATE ORDER BY report_date DESC LIMIT 1";
+        
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                StringBuilder report = new StringBuilder();
+                LocalDate today = LocalDate.now();
+                report.append("=== Z-REPORT FOR ").append(today.format(DateTimeFormatter.ISO_DATE)).append(" ===\n\n");
+                
+                int totalOrders = rs.getInt("total_orders");
+                double totalRevenue = rs.getDouble("total_revenue");
+                double taxAmount = rs.getDouble("tax_amount");
+                
+                report.append(String.format("Total Orders: %d\n", totalOrders));
+                report.append(String.format("Gross Sales: $%.2f\nTax (8.25%%): $%.2f\nNet Sales: $%.2f\n", totalRevenue, taxAmount, totalRevenue - taxAmount));
+                report.append("\n--- Previously Generated Z-Report ---");
+                
+                zReportArea.setText(report.toString());
+            }
+        } catch (Exception e) { 
+            System.err.println("Error loading today's Z-report: " + e.getMessage());
+            zReportArea.setText("Error loading today's Z-report content");
+        }
     }
 
     private void generateProductUsageChart() {
@@ -87,42 +126,60 @@ public class ReportingController {
             return;
         }
         
-        usageChart.getData().clear();
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Inventory Usage");
+        ObservableList<Models.UsageItem> data = FXCollections.observableArrayList();
         
-        String sql = "SELECT i.item_name, COALESCE(SUM(oi.quantity * mi.quantity_used), 0) as total_used " +
+        String sql = "SELECT item_name, SUM(total_used) as total_used_sum FROM (SELECT i.item_name, (COUNT(oi.menu_id) * mi.quantity_used) as total_used " +
                      "FROM inventory i LEFT JOIN menu_ingredients mi ON i.id = mi.inventory_id " +
                      "LEFT JOIN order_items oi ON mi.menu_id = oi.menu_id " +
                      "LEFT JOIN orders o ON oi.order_id = o.order_id " +
-                     "WHERE DATE(o.order_time) BETWEEN ? AND ? GROUP BY i.item_name ORDER BY total_used DESC LIMIT 10";
+                     "WHERE DATE(o.order_time) BETWEEN ? AND ? GROUP BY i.item_name, mi.quantity_used) AS subquery " +
+                     "GROUP BY item_name ORDER BY total_used_sum DESC LIMIT 10";
         
         try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setDate(1, Date.valueOf(startDatePicker.getValue()));
             pstmt.setDate(2, Date.valueOf(endDatePicker.getValue()));
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()) {
-                series.getData().add(new XYChart.Data<>(rs.getString("item_name"), rs.getDouble("total_used")));
+                data.add(new Models.UsageItem(rs.getString("item_name"), rs.getDouble("total_used_sum")));
             }
-            usageChart.getData().add(series);
-        } catch (Exception e) { showAlert("Error generating usage chart: " + e.getMessage()); }
+            usageTable.setItems(data);
+        } catch (Exception e) { showAlert("Error generating usage report: " + e.getMessage()); }
     }
 
     private void generateXReport() {
         StringBuilder report = new StringBuilder();
         report.append("=== X-REPORT FOR ").append(LocalDate.now().format(DateTimeFormatter.ISO_DATE)).append(" ===\n\n");
-        report.append("HOURLY SALES BREAKDOWN:\n------------------------\n");
-
-        String sql = "SELECT EXTRACT(HOUR FROM order_time) as hour, COUNT(*) as order_count, SUM(total_price) as total_sales " +
-                     "FROM orders WHERE DATE(order_time) = CURRENT_DATE GROUP BY hour ORDER BY hour";
-                     
-        try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-            while(rs.next()) {
-                report.append(String.format("%02d:00-%02d:59: %d orders, $%.2f sales\n", 
-                              rs.getInt("hour"), rs.getInt("hour"), rs.getInt("order_count"), rs.getDouble("total_sales")));
+        
+        // Check if Z-report has been generated today
+        boolean zReportGeneratedToday = false;
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM z_reports WHERE DATE(report_date) = CURRENT_DATE");
+            if (rs.next() && rs.getInt(1) > 0) {
+                zReportGeneratedToday = true;
             }
-            xReportArea.setText(report.toString());
-        } catch (Exception e) { showAlert("Error generating X-Report: " + e.getMessage()); }
+        } catch (Exception e) { 
+            // If we can't check, assume no Z-report
+        }
+        
+        if (zReportGeneratedToday) {
+            report.append("HOURLY SALES BREAKDOWN:\n------------------------\n");
+            report.append("Day closed - Z-Report already generated\n");
+            report.append("All sales figures reset to $0.00\n\n");
+            report.append("00:00-23:59: 0 orders, $0.00 sales\n");
+        } else {
+            report.append("HOURLY SALES BREAKDOWN:\n------------------------\n");
+            String sql = "SELECT EXTRACT(HOUR FROM order_time) as hour, COUNT(*) as order_count, SUM(total_price) as total_sales " +
+                         "FROM orders WHERE DATE(order_time) = CURRENT_DATE GROUP BY hour ORDER BY hour";
+                         
+            try (Connection conn = getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+                while(rs.next()) {
+                    report.append(String.format("%02d:00-%02d:59: %d orders, $%.2f sales\n", 
+                                  rs.getInt("hour"), rs.getInt("hour"), rs.getInt("order_count"), rs.getDouble("total_sales")));
+                }
+            } catch (Exception e) { showAlert("Error generating X-Report: " + e.getMessage()); }
+        }
+        
+        xReportArea.setText(report.toString());
     }
 
     private void generateZReport() {

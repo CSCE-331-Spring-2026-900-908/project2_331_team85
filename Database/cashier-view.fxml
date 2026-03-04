@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane prefHeight="768.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="CashierController">
+<BorderPane prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="CashierController">
     <center>
         <VBox spacing="10">
             <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
@@ -19,17 +19,17 @@
                 <Label text="Drink Customization" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
                 <HBox spacing="15" alignment="CENTER">
                     <Label text="Sweetness:" style="-fx-font-size: 14px;"/>
-                    <Button text="0%" fx:id="btnSweet0" onAction="#handleCustomizationClick"/>
-                    <Button text="50%" fx:id="btnSweet50" onAction="#handleCustomizationClick"/>
-                    <Button text="100%" fx:id="btnSweet100" onAction="#handleCustomizationClick"/>
-                    <Button text="120%" fx:id="btnSweet120" onAction="#handleCustomizationClick"/>
+                    <Button text="0%" fx:id="btnSweet0"/>
+                    <Button text="50%" fx:id="btnSweet50"/>
+                    <Button text="100%" fx:id="btnSweet100"/>
+                    <Button text="120%" fx:id="btnSweet120"/>
                 </HBox>
                 <HBox spacing="15" alignment="CENTER">
                     <Label text="Ice Level:" style="-fx-font-size: 14px;"/>
-                    <Button text="None" fx:id="btnIceNone" onAction="#handleCustomizationClick"/>
-                    <Button text="Less" fx:id="btnIceLess" onAction="#handleCustomizationClick"/>
-                    <Button text="Regular" fx:id="btnIceReg" onAction="#handleCustomizationClick"/>
-                    <Button text="Extra" fx:id="btnIceExtra" onAction="#handleCustomizationClick"/>
+                    <Button text="None" fx:id="btnIceNone"/>
+                    <Button text="Less" fx:id="btnIceLess"/>
+                    <Button text="Regular" fx:id="btnIceReg"/>
+                    <Button text="Extra" fx:id="btnIceExtra"/>
                 </HBox>
             </VBox>
         </VBox>
