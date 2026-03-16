@@ -4,15 +4,24 @@ import javafx.beans.property.SimpleStringProperty;
 /**
  * Represents an item in the inventory.
  * Uses JavaFX properties to allow for data binding in TableViews.
+ * 
+ * @author Team 85
+ * @version 1.0
  */
 public class InventoryItem {
-    // The name of the inventory item
+    /**
+     * The name of the inventory item.
+     */
     private final SimpleStringProperty itemName;
     
-    // The quantity available in stock
+    /**
+     * The quantity available in stock.
+     */
     private final SimpleIntegerProperty quantity;
     
-    // The unit of measurement (e.g., "kg", "cups")
+    /**
+     * The unit of measurement (e.g., "kg", "cups").
+     */
     private final SimpleStringProperty unit;
 
     /**

@@ -4,12 +4,19 @@ import javafx.beans.property.SimpleStringProperty;
 /**
  * Represents a Product entity in the application.
  * Uses JavaFX properties to allow for data binding in TableViews and other UI controls.
+ * 
+ * @author Team 85
+ * @version 1.0
  */
 public class Product {
-    // The name of the product, observable for UI updates
+    /**
+     * The name of the product, observable for UI updates.
+     */
     private final SimpleStringProperty productName;
     
-    // The price of the product, observable for UI updates
+    /**
+     * The price of the product, observable for UI updates.
+     */
     private final SimpleIntegerProperty price;
 
     /**

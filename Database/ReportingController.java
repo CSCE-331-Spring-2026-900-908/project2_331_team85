@@ -13,6 +13,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
  * Controller class for the Reporting View.
  * Handles generation of sales reports (X and Z reports), product usage charts,
  * and menu item management.
+ * 
+ * @author Team 85
+ * @version 1.0
  */
 public class ReportingController {
     // Database connection string

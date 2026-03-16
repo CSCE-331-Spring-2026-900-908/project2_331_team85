@@ -7,6 +7,9 @@ import javafx.stage.Stage;
  * Main entry point for the POS System application.
  * This class extends JavaFX Application and handles the initialization
  * of the primary stages (windows) for both the Manager and Cashier views.
+ * 
+ * @author Team 85
+ * @version 1.0
  */
 public class DatabaseApp extends Application {
 

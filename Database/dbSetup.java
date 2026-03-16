@@ -6,12 +6,19 @@ import java.util.Properties;
  * Database setup configuration class.
  * Purpose: Handles the loading of database credentials from a configuration file
  * to ensure sensitive information like usernames and passwords are not hardcoded.
+ * 
+ * @author Team 85
+ * @version 1.0
  */
 public final class dbSetup {
-    // The database username loaded from the environment file
+    /**
+     * The database username loaded from the environment file.
+     */
     public String user;
     
-    // The database password loaded from the environment file
+    /**
+     * The database password loaded from the environment file.
+     */
     public String pswd;
 
     /**

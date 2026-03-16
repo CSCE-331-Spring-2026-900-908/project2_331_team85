@@ -11,6 +11,9 @@ import javafx.scene.layout.FlowPane;
  * Controller class for the Cashier View.
  * Handles user interactions for taking orders, customizing items,
  * and submitting transactions to the database.
+ * 
+ * @author Team 85
+ * @version 1.0
  */
 public class CashierController {
 

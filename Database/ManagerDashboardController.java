@@ -16,6 +16,9 @@ import java.util.Random;
  * Controller class for the Manager Dashboard.
  * Handles administrative tasks such as managing inventory, employees, and menu items,
  * as well as viewing sales trends and reports.
+ * 
+ * @author Team 85
+ * @version 1.0
  */
 public class ManagerDashboardController {
 
