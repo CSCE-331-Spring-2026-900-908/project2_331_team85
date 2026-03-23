@@ -31,15 +31,20 @@ public class Models {
         }
 
         /**
-         * @return The ID of the menu item
+         * Gets the ID of the menu item.
+         * * @return The ID of the menu item
          */
         public int getId() { return id; }
+
         /**
-         * @return The name of the menu item
+         * Gets the name of the menu item.
+         * * @return The name of the menu item
          */
         public String getName() { return name; }
+
         /**
-         * @return The price of the menu item
+         * Gets the price of the menu item.
+         * * @return The price of the menu item
          */
         public double getPrice() { return price; }
 
@@ -88,18 +93,25 @@ public class Models {
         }
 
         /**
+         * Gets the ID of the inventory item.
          * @return The ID of the inventory item
          */
         public int getId() { return id; }
+        
         /**
+         * Gets the name of the inventory item.
          * @return The name of the inventory item
          */
         public String getName() { return name; }
+        
         /**
+         * Gets the quantity in stock.
          * @return The quantity in stock
          */
         public int getQuantity() { return quantity; }
+        
         /**
+         * Gets the unit of measurement.
          * @return The unit of measurement
          */
         public String getUnit() { return unit; }
@@ -152,14 +164,19 @@ public class Models {
         }
 
         /**
+         * Gets the name of the item sold.
          * @return The name of the item
          */
         public String getItemName() { return itemName; }
+        
         /**
+         * Gets the quantity sold.
          * @return The quantity sold
          */
         public int getQuantity() { return quantity; }
+        
         /**
+         * Gets the revenue generated.
          * @return The revenue generated
          */
         public double getRevenue() { return revenue; }
@@ -184,11 +201,14 @@ public class Models {
             this.quantityUsed = quantityUsed;
         }
 
-        /**
+/**
+         * Gets the name of the item used.
          * @return The name of the item
          */
         public String getItemName() { return itemName; }
+        
         /**
+         * Gets the quantity used.
          * @return The quantity used
          */
         public double getQuantityUsed() { return quantityUsed; }
