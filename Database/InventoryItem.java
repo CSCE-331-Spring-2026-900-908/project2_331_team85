@@ -53,4 +53,22 @@ public class InventoryItem {
      * @return The unit as a String
      */
     public String getUnit() { return unit.get(); }
+
+    /**
+     * Sets the item name.
+     * @param value The new item name
+     */
+    public void setItemName(String value) { this.itemName.set(value); }
+    
+    /**
+     * Sets the quantity.
+     * @param value The new quantity
+     */
+    public void setQuantity(int value) { this.quantity.set(value); }
+    
+    /**
+     * Sets the unit of measurement.
+     * @param value The new unit
+     */
+    public void setUnit(String value) { this.unit.set(value); }
 }

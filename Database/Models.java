@@ -42,6 +42,24 @@ public class Models {
          * @return The price of the menu item
          */
         public double getPrice() { return price; }
+
+        /**
+         * Sets the ID of the menu item.
+         * @param id The new ID
+         */
+        public void setId(int id) { this.id = id; }
+
+        /**
+         * Sets the name of the menu item.
+         * @param name The new name
+         */
+        public void setName(String name) { this.name = name; }
+
+        /**
+         * Sets the price of the menu item.
+         * @param price The new price
+         */
+        public void setPrice(double price) { this.price = price; }
     }
 
     /**
@@ -85,6 +103,30 @@ public class Models {
          * @return The unit of measurement
          */
         public String getUnit() { return unit; }
+
+        /**
+         * Sets the ID of the inventory item.
+         * @param id The new ID
+         */
+        public void setId(int id) { this.id = id; }
+
+        /**
+         * Sets the name of the inventory item.
+         * @param name The new name
+         */
+        public void setName(String name) { this.name = name; }
+
+        /**
+         * Sets the quantity in stock.
+         * @param quantity The new quantity
+         */
+        public void setQuantity(int quantity) { this.quantity = quantity; }
+
+        /**
+         * Sets the unit of measurement.
+         * @param unit The new unit
+         */
+        public void setUnit(String unit) { this.unit = unit; }
     }
 
     /**
